@@ -1,41 +1,39 @@
-# <p align = "center"> Git笔记 </p>
-## Git介绍
-- Git is a distributed version control system.
-- SVN vs Git, Centralized or Distributed?  
-The main difference between SVN and Git is where the files and historical data are stored.
-  - SVN has a central server to store all files and historical data and developers commit their changes directly to that central server repository.
-However, working on a central server means there is a single point of failure. I
-f there is an error, it can destory all builds.
-Limited offline access is a frequent point of complaint.
-  - Git has a central repository as well as a series of local repositories. Local repositories are exact copies of the central repository complete with the entire history of changes.  
-Developers work on their local repositories and get ready to merge into the central repository.
-Unlike SVN, Git can work offline, allowing your team to continue working without losing features if they lose connection.
-## Git命令
-### Git配置
+# <p align = "center"> Git Notes </p>
+## Introduction
+- **Git** is a distributed version control system.
+- **SVN** vs **Git**, Centralized or Distributed?  
+  - **SVN** has a central repository to store all files and historical data.  
+  **Git** has a central repository as well as a series of local repositories. Local repositories are exact copies of the central repository complete with the entire history of changes.
+
+  - **SVN** developers commit their changes directly to that central server repository. Offline access is limited.  
+  **Git** developers work on their local repositories and then merge into the central repository, allowing them to continue working without losing features if they lose conncetion.
+
+  - **SVN** may have a single point of failure. If there is an error, it can destory all builds. When the central repository is broken, developers have to wait until the central repository is fixed.  
+  **Git** developers can continue to commit code locally until the central repository is fixed.
+## Git Commands
+### Git Configuration
 ```bash
 $ git config --global user.name "Your Name"
 $ git config --global user.email "email@example.com"
 ```
-`git config`命令的`--global`参数，表明这台机器上的所有Git仓库都会使用这个配置，也可以对某个仓库指定不同的用户名和邮箱地址。
-
-### 创建版本库
-#### 初始化一个Git仓库
+The parameter `--global` indicates all repositories in this PC will share the same configuration.
+### Build a repository
+#### Initialization
 ```bash
 $ git init
 ```
-#### 添加文件到Git仓库
-包括两步：
+#### Add files to a repository
 ```bash
 $ git add <file>
 $ git commit -m "description"
 ```
-`git add`可以反复多次使用，添加多个文件，`git commit`可以一次提交很多文件，`-m`后面输入的是本次提交的说明，可以输入任意内容。
+You can use `git add` multiple times to track multiple files, and then use `git commit` to add all changes to the repository. The parameter `-m` indicates comments for this commit.
 
-### 查看工作区状态
+### Check Working directory
 ```bash
 $ git status
 ```
-### 查看修改内容
+### Check changes
 ```bash
 $ git diff
 ```
@@ -45,229 +43,161 @@ $ git diff --cached
 ```bash
 $ git diff HEAD -- <file>
 ```
-- `git diff` 可以查看工作区(work dict)和暂存区(stage)的区别
-- `git diff --cached` 可以查看暂存区(stage)和分支(master)的区别
-- `git diff HEAD -- <file>` 可以查看工作区和版本库里面最新版本的区别
-### 查看提交日志
+- `git diff` check difference between _**work dir**_ and _**stage**_
+- `git diff --cached` check difference between _**stage**_ and _**branch**_(current)
+- `git diff HEAD -- <file>` check difference between _**work dir**_ and _**branch**_ (HEAD points at the latest commit of the current branch)
+### Check log information
 ```bash
-$ git log
+$ git log --oneline --decorate --stat
 ```
-简化日志输出信息
-```bash
-$ git log --pretty=oneline
-```
-### 查看命令历史
+- `--oneline` equals `--pretty=oneline --abbrev-commit`
+- `--decorate` shows details about the branches and HEAD
+- `--stat` shows brief information of insertion and deletion
+### Check command log
 ```bash
 $ git reflog
 ```
-### 版本回退
+### Version rollback
 ```bash
-$ git reset --hard HEAD^
+$ git reset --soft/mixed/hard HEAD/HEAD^/HEAD^^/HEAD~100/commit_id/id_prefix
 ```
-以上命令是返回上一个版本，在Git中，用`HEAD`表示当前版本，上一个版本就是`HEAD^`，上上一个版本是`HEAD^^`，往上100个版本写成`HEAD~100`。
-### 回退指定版本号
-```bash
-$ git reset --hard commit_id
-```
-commit_id是版本号，是一个用SHA1计算出的序列
+- `--soft` indicates no touching of _**work dic**_ or _**index(stage)**_ files, resetting **HEAD** to _<commit_id>_
+- `--mixed`(default) indicates no touching of _**work dic**_ files, resetting _**index**_ and **HEAD** to _<commit_id>_
+- `--hard` indicates resetting **ALL** things to _<commit_id>_ which means discarding all changes
 
-### 工作区、暂存区和版本库
-工作区：在电脑里能看到的目录；
-版本库：在工作区有一个隐藏目录`.git`，是Git的版本库。
-Git的版本库中存了很多东西，其中最重要的就是称为stage（或者称为index）的暂存区，还有Git自动创建的`master`，以及指向`master`的指针`HEAD`。
+`HEAD` points at the current version, `HEAD^` points at the previous version, `HEAD^^` points at the second previous version, `HEAD~100` points at the 100th previous version. We can also rollback to the certain version via commit id which can be obtained by `git log`.
 
-![理解](https://cdn.liaoxuefeng.com/cdn/files/attachments/001384907720458e56751df1c474485b697575073c40ae9000/0)
-
-进一步解释一些命令：
-- `git add`实际上是把文件添加到暂存区
-- `git commit`实际上是把暂存区的所有内容提交到当前分支
-### 撤销修改
-#### 丢弃工作区的修改
+### Discard changes(modification, removal)
+#### Discard changes in work dir
 ```bash
 $ git checkout -- <file>
 ```
-该命令是指将文件在工作区的修改全部撤销，这里有两种情况：
-1. 一种是file自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
-2. 一种是file已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。
+Rollback the file to the latest `git add` or `git commit`
 
-总之，就是让这个文件回到最近一次git commit或git add时的状态。
-
-#### 丢弃暂存区的修改
-分两步：
-第一步，把暂存区的修改撤销掉(unstage)，重新放回工作区：
+#### Discard changes in stage
+Step 1: Discard changes in _**stage**_
 ```bash
 $ git reset HEAD <file>
 ```
-第二步，撤销工作区的修改
+Step 2: Discard changes in _**work dir**_
 ```bash
 $ git checkout -- <file>
 ```
-小结：
-1. 当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令`git checkout -- <file>`。
-2. 当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令`git reset HEAD <file>`，就回到了第一步，第二步按第一步操作。
+Tip:
+```bash
+$ git reset --hard HEAD <file>
+```
+This is a combination of Step 1 and Step 2.
 
-3. 已经提交了不合适的修改到版本库时，想要撤销本次提交，进行版本回退，前提是没有推送到远程库。
-
-### 删除文件
+### Remove files
 ```bash
 $ git rm <file>
 ```
-`git rm <file>`相当于执行
+`git rm <file>` equals
 ```bash
 $ rm <file>
 $ git add <file>
 ```
-#### 进一步的解释
-Q：比如执行了`rm text.txt` 误删了怎么恢复？
-A：执行`git checkout -- text.txt` 把版本库的东西重新写回工作区就行了
-Q：如果执行了`git rm text.txt`我们会发现工作区的text.txt也删除了，怎么恢复？
-A：先撤销暂存区修改，重新放回工作区，然后再从版本库写回到工作区
-```bash
-$ git reset head text.txt
-$ git checkout -- text.txt
-```
-Q：如果真的想从版本库里面删除文件怎么做？
-A：执行`git commit -m "delete text.txt"`，提交后最新的版本库将不包含这个文件
-
-### 远程仓库
-#### 创建SSH Key
+### Remote repository
+#### Generate SSH Key
 ```bash
 $ ssh-keygen -t rsa -C "youremail@example.com"
 ```
-#### 关联远程仓库
+#### Add a remote repository
 ```bash
 $ git remote add origin https://github.com/username/repositoryname.git
+& git remote add origin git@github.com:username/repositoryname.git
 ```
-#### 推送到远程仓库
+#### Push to a remote repository
 ```bash
 $ git push -u origin master
 ```
-`-u` 表示第一次推送master分支的所有内容，此后，每次本地提交后，只要有必要，就可以使用命令`git push origin master`推送最新修改。
+`-u` indicates the first push of all files. `git push origin master` for the following push.
 
-#### 从远程克隆
+#### Clone from a remote repository
 ```bash
 $ git clone https://github.com/usern/repositoryname.git
 ```
+Clone a whole project
+```bash
+$ svn https://github.com/xx/xxx
+```
+Clone a directory. Note: replace 'tree' with 'branch' of the URL
+```bash
+$ wget https://raw.github.com/xxx/xxx/xxx
+```
+Clone a single file. Note: use the URL of raw data
 
-### 分支
-#### 创建分支
+### Branch
+#### Create a branch
 ```bash
 $ git branch <branchname>
 ```
-#### 查看分支
+#### Check branches
 ```bash
 $ git branch
 ```
-`git branch`命令会列出所有分支，当前分支前面会标一个*号。
+`git branch` list all branches, attaching * at the current branch
 
-#### 切换分支
+#### Switch branches
 ```bash
 $ git checkout <branchname>
 ```
 
-#### 创建+切换分支
+#### Create + Switch a branch
 ```bash
 $ git checkout -b <branchname>
 ```
 
-#### 合并某分支到当前分支
+#### Merge a branch to the current branch
 ```bash
 $ git merge <branchname>
 ```
 
-#### 删除分支
+#### Delete a branch
 ```bash
 $ git branch -d <branchname>
 ```
-#### 查看分支合并图
+#### Check graph log about branches
 ```bash
 $ git log --graph
 ```
-当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。用`git log --graph`命令可以看到分支合并图。
 
-#### 普通模式合并分支
+#### No-fast-forward merge
 ```bash
 $ git merge --no-ff -m "description" <branchname>
 ```
-因为本次合并要创建一个新的commit，所以加上`-m`参数，把commit描述写进去。合并分支时，加上`--no-ff`参数就可以用普通模式合并，能看出来曾经做过合并，包含作者和时间戳等信息，而fast forward合并就看不出来曾经做过合并。
+`--no-ff` indicates merging branches by generating another commit，in which case a comment is needed.
 
-#### 保存工作现场
+#### Save the current work
 ```bash
 $ git stash
 ```
-#### 查看工作现场
+#### Check saved work
 ```bash
 $ git stash list
 ```
-#### 恢复工作现场
+#### 恢Recover saved work
 ```bash
 $ git stash pop
 ```
-#### 丢弃一个没有合并过的分支
+#### Discard a branch which is never merged with parameter `-D`
 ```bash
 $ git branch -D <branchname>
 ```
 
-#### 查看远程库信息
+#### Check the remote repository
 ```bash
 $ git remote -v
 ```
 
-#### 在本地创建和远程分支对应的分支
+#### Create a local branch corresponding to the remote branch
 ```bash
 $ git checkout -b branch-name origin/branch-name，
 ```
-本地和远程分支的名称最好一致；
+It is better for two branches to share a same name.
 
-#### 建立本地分支和远程分支的关联
+#### Add a connection between the local and remote branches
 ```bash
 $ git branch --set-upstream branch-name origin/branch-name；
-```
-#### 从本地推送分支
-```bash
-$ git push origin branch-name
-```
-如果推送失败，先用git pull抓取远程的新提交；
-#### 从远程抓取分支
-```bash
-$ git pull
-```
-如果有冲突，要先处理冲突。
-
-### 标签
-tag就是一个让人容易记住的有意义的名字，它跟某个commit绑在一起。
-#### 新建一个标签
-```bash
-$ git tag <tagname>
-```
-命令`git tag <tagname>`用于新建一个标签，默认为HEAD，也可以指定一个commit id。
-#### 指定标签信息
-```bash
-$ git tag -a <tagname> -m <description> <branchname> or commit_id
-```
-`git tag -a <tagname> -m "blablabla..."`可以指定标签信息。
-#### PGP签名标签
-```bash
-$ git tag -s <tagname> -m <description> <branchname> or commit_id
-```
-`git tag -s <tagname> -m "blablabla..."`可以用PGP签名标签。
-#### 查看所有标签
-```bash
-$ git tag
-```
-#### 推送一个本地标签
-```bash
-$ git push origin <tagname>
-```
-#### 推送全部未推送过的本地标签
-```bash
-$ git push origin --tags
-```
-#### 删除一个本地标签
-```bash
-$ git tag -d <tagname>
-```
-#### 删除一个远程标签
-```bash
-$ git push origin :refs/tags/<tagname>
 ```
