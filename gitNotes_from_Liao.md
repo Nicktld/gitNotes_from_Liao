@@ -1,12 +1,15 @@
 # <p align = "center"> Git笔记 </p>
 ## Git介绍
-- Git是分布式版本控制系统
-- 集中式VS分布式，SVN VS Git
-  1. SVN和Git主要的区别在于历史版本维护的位置
-  2. Git本地仓库包含代码库还有历史库，在本地的环境开发就可以记录历史而SVN的历史库存在于中央仓库，每次对比与提交代码都必须连接到中央仓库才能进行。
-  3. 这样的好处在于：
-     - 自己可以在脱机环境查看开发的版本历史。
-     - 多人开发时如果充当中央仓库的Git仓库挂了，可以随时创建一个新的中央仓库然后同步就立刻恢复了中央库。
+- Git is a distributed version control system.
+- SVN vs Git, Centralized or Distributed?  
+The main difference between SVN and Git is where the files and historical data are stored.
+  - SVN has a central server to store all files and historical data and developers commit their changes directly to that central server repository.
+However, working on a central server means there is a single point of failure. I
+f there is an error, it can destory all builds.
+Limited offline access is a frequent point of complaint.
+  - Git has a central repository as well as a series of local repositories. Local repositories are exact copies of the central repository complete with the entire history of changes.  
+Developers work on their local repositories and get ready to merge into the central repository.
+Unlike SVN, Git can work offline, allowing your team to continue working without losing features if they lose connection.
 ## Git命令
 ### Git配置
 ```bash
