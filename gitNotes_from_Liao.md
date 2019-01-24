@@ -177,7 +177,7 @@ $ git stash
 ```bash
 $ git stash list
 ```
-#### 恢Recover saved work
+#### Recover saved work
 ```bash
 $ git stash pop
 ```
@@ -193,11 +193,11 @@ $ git remote -v
 
 #### Create a local branch corresponding to the remote branch
 ```bash
-$ git checkout -b branch-name origin/branch-name，
+$ git checkout -b branch-name origin/branch-name
 ```
 It is better for two branches to share a same name.
 
 #### Add a connection between the local and remote branches
 ```bash
-$ git branch --set-upstream branch-name origin/branch-name；
+$ git branch --set-upstream branch-name origin/branch-name
 ```
